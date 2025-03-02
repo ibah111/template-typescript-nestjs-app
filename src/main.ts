@@ -17,15 +17,18 @@ export const node = process.env.NODE_ENV;
 // For dev or prod http/https connection;
 class bootstrapOptions {
   constructor() {
-    this.adapter =
+    this.adapter = new FastifyAdapter();
+    /**
+       * 
       node === 'prod'
-        ? new FastifyAdapter({
-            https: {
-              //if needed import here https: https()!,
-              key: '',
-            },
-          })
-        : new FastifyAdapter();
+      ? new FastifyAdapter({
+        https: {
+          //if needed import here https: https()!,
+          key: '',
+        },
+      })
+      : new FastifyAdapter();
+      */
   }
   adapter: FastifyAdapter;
 }
