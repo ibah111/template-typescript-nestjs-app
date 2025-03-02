@@ -9,11 +9,17 @@
 
 ## Установка
 
-1. Клонируйте репозиторий:
+Клонируйте репозиторий:
 
 ```bash
    git clone https://github.com/ibah111/template-typescript-nestjs-app.git
    cd template-typescript-nestjs-app
+```
+
+### Redis
+
+```bash
+    docker run --name my-redis -p 6379:6379 -d redis
 ```
 
 ### Соберите Docker-образ
