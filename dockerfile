@@ -7,8 +7,11 @@ WORKDIR /app
 # Копируем только файлы package.json и yarn.lock, чтобы оптимизировать сборку
 COPY package.json yarn.lock ./
 
+# Активируем corepack и обновляем последнюю доступную версию yarn
+RUN corepack enable && yarn set version berry
+
 # Устанавливаем зависимости
-RUN yarn install --frozen-lockfile
+RUN yarn install 
 
 # Копируем остальные файлы проекта в контейнер
 COPY . .
