@@ -2,8 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getSwaggerOptions, getSwaggerCustomOptions } from './utils/swagger';
-import { FastifyAdapter } from '@nestjs/platform-fastify';
-
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import 'colors';
 // For definition of application mode
 /**
  * depends from prod or dev mode applicatiton chooses
@@ -28,7 +31,11 @@ class bootstrapOptions {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const options = new bootstrapOptions();
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    options.adapter,
+  );
   const config = new DocumentBuilder()
     .setTitle('Test template api')
     .setDescription('Api page of template application')
@@ -41,7 +48,6 @@ async function bootstrap() {
   );
   SwaggerModule.setup('docs', app, document, getSwaggerCustomOptions());
   await app.listen(3000, '0.0.0.0');
-  console.log(`Server running on ${await app.getUrl()}/docs`);
-  console.log(`Bot launched`);
+  console.log('Server running on ', `${await app.getUrl()}/docs`.yellow);
 }
 bootstrap();
