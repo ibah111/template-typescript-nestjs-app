@@ -10,6 +10,9 @@ COPY package.json yarn.lock ./
 # Активируем corepack и обновляем последнюю доступную версию yarn
 RUN corepack enable && yarn set version berry
 
+# Отключаю pnp и использую node_modules
+RUN yarn config set nodeLinker node-modules
+
 # Устанавливаем зависимости
 RUN yarn install 
 
