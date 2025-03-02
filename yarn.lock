@@ -3600,7 +3600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:4.0.3":
+"chokidar@npm:4.0.3, chokidar@npm:^4.0.3":
   version: 4.0.3
   resolution: "chokidar@npm:4.0.3"
   dependencies:
@@ -9019,6 +9019,7 @@ __metadata:
     "@types/node": "npm:^22.10.7"
     "@types/supertest": "npm:^6.0.2"
     ansis: "npm:^3.17.0"
+    chokidar: "npm:^4.0.3"
     colors: "npm:^1.4.0"
     eslint: "npm:^9.18.0"
     eslint-config-prettier: "npm:^10.0.1"
