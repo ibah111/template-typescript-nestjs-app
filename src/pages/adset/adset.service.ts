@@ -40,19 +40,6 @@ export default class AdsetService implements OnModuleInit {
     );
   }
 
-  private selectNode(options: { name: string; probability: number }[]): string {
-    const total = options.reduce((sum, opt) => sum + opt.probability, 0);
-    const rand = Math.random() * total;
-    let cumulative = 0;
-    for (const opt of options) {
-      cumulative += opt.probability;
-      if (rand < cumulative) {
-        return opt.name;
-      }
-    }
-    return options[0].name; // fallback
-  }
-
   async config({ geo }: AdsetInput) {}
 
   async fulltree() {
