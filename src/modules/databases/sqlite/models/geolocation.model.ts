@@ -26,5 +26,5 @@ export default class Geolocation extends Model<
   probability: number;
 
   @HasMany(() => Module)
-  Modules: Module[];
+  Modules?: Module[];
 }

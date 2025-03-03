@@ -27,11 +27,11 @@ export default class Monetization extends Model<
   r_module_id: number;
 
   @BelongsTo(() => Module)
-  module: Module;
+  module?: Module;
 
   @Column(DataType.FLOAT)
   probability: number;
 
-  @HasMany(()=> MonetizationOption)
-  options: MonetizationOption;
+  @HasMany(() => MonetizationOption)
+  options?: MonetizationOption;
 }

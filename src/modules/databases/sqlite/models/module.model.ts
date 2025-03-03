@@ -27,11 +27,11 @@ export default class Module extends Model<
   r_geo_id: number;
 
   @BelongsTo(() => Geolocation)
-  geolocation: Geolocation;
+  geolocation?: Geolocation;
 
   @HasOne(() => Push)
-  Pushs: Push;
+  Pushs?: Push;
 
   @HasOne(() => Monetization)
-  Monetizations: Monetization;
+  Monetizations?: Monetization;
 }

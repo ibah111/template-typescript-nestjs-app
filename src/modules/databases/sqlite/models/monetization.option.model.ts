@@ -32,5 +32,5 @@ export default class MonetizationOption extends Model<
   r_monetization_id: number;
 
   @BelongsTo(() => Monetization)
-  monetization: Monetization;
+  monetization?: Monetization;
 }

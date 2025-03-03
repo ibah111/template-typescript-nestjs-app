@@ -31,5 +31,5 @@ export default class PushOption extends Model<
   r_push_id: number;
 
   @BelongsTo(() => Push)
-  push: Push;
+  push?: Push;
 }

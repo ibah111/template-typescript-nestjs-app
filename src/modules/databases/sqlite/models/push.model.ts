@@ -22,11 +22,11 @@ export default class Push extends Model {
   r_module_id: number;
 
   @BelongsTo(() => Module)
-  module: Module;
+  module?: Module;
 
   @Column(DataType.FLOAT)
   probability: number;
 
   @HasMany(() => PushOption)
-  options: PushOption[];
+  option?: PushOption[];
 }
