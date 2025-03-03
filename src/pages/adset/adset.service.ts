@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { AddModuleInput, AdsetInput, RegionNameInput } from './adset.input';
 import { AdSet, Tree } from './adset.dto/adset.interface';
-import * as tree from '../../tree.json';
 import { InjectModel } from '@nestjs/sequelize';
 import Geolocation from 'src/modules/databases/sqlite/models/geolocation.model';
 import ModuleModel from 'src/modules/databases/sqlite/models/module.model';
@@ -40,7 +39,45 @@ export default class AdsetService implements OnModuleInit {
     );
   }
 
-  async config({ geo }: AdsetInput) {}
+  async config({ geo }: AdsetInput) {
+    const geo_module = await this.modelGeo.findOne({
+      attributes: ['id', 'region_name', 'probability'],
+      where: {
+        region_name: geo,
+      },
+      include: [
+        {
+          attributes: ['id', 'r_geo_id'],
+          model: ModuleModel,
+          include: [
+            {
+              attributes: ['id', 'r_module_id', 'probability'],
+              model: Push,
+              include: [
+                {
+                  limit: 1,
+                  order: [['probability', 'DESC']],
+                  model: PushOption,
+                },
+              ],
+            },
+            {
+              attributes: ['id', 'r_module_id', 'probability'],
+              model: Monetization,
+              include: [
+                {
+                  limit: 1,
+                  order: [['probability', 'DESC']],
+                  model: MonetizationOption,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    return geo_module;
+  }
 
   async fulltree() {
     const all_geo = await this.modelGeo.findAll({
