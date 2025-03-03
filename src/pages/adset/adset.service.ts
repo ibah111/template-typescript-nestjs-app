@@ -43,7 +43,7 @@ export default class AdsetService implements OnModuleInit {
     const geo_module = await this.modelGeo.findOne({
       attributes: ['id', 'region_name', 'probability'],
       where: {
-        region_name: geo,
+        region_name: geo.toLocaleUpperCase(),
       },
       include: [
         {
