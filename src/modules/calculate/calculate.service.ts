@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { round } from 'src/utils/round';
 
 @Injectable()
 export default class CalculateService {
@@ -10,6 +11,6 @@ export default class CalculateService {
       even_probability = even_probability / (total_count + 1);
       return even_probability;
     }
-    return even_probability;
+    return round(even_probability);
   }
 }
