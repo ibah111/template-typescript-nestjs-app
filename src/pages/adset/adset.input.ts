@@ -14,6 +14,7 @@ export class AdsetInput {
 export class RegionNameInput {
   @ApiProperty({
     description: 'Имя региона. Проходит через UpperCase.',
+    default: '',
   })
   @IsString()
   @MaxLength(4)
