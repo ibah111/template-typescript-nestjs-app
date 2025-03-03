@@ -15,7 +15,6 @@ import MonetizationOption from 'src/modules/databases/sqlite/models/monetization
 import Push from 'src/modules/databases/sqlite/models/push.model';
 import PushOption from 'src/modules/databases/sqlite/models/push.option.model';
 import CalculateService from 'src/modules/calculate/calculate.service';
-import Module from 'module';
 
 @Injectable()
 export default class AdsetService implements OnModuleInit {
@@ -178,6 +177,7 @@ export default class AdsetService implements OnModuleInit {
       include: [Push, Monetization],
     });
     if (!module) {
+      console.log('МОДУЛЯ НЕ СУЩЕСТВУЕТ!'.red);
       return await this.modelModule
         .create({
           r_geo_id,
@@ -185,10 +185,17 @@ export default class AdsetService implements OnModuleInit {
         .then(async (result_module) => {
           //type coming from query url so it's typeof string value, this is why i am using == for compare
           if (type == 1) {
-            return await this.recalc_and_create_push(result_module.id);
+            return await this.recalc_and_create_push(result_module).then(
+              (res) =>
+                console.log(`Модуль создан, и пуш к нему, ${res.id}`.green),
+            );
           }
           if (type == 2) {
-            return await this.recalc_and_create_monetization(result_module.id);
+            return await this.recalc_and_create_monetization(
+              result_module,
+            ).then((res) =>
+              console.log(`Модуль создан, и монетизация к нему ${res.id}`),
+            );
           }
         });
     } else {
@@ -206,7 +213,7 @@ export default class AdsetService implements OnModuleInit {
         if (module.dataValues.Monetization) {
           throw new Error('У данного модуля уже есть монетизация.');
         } else {
-          return await this.recalc_and_create_monetization(module.id);
+          return await this.recalc_and_create_monetization(module);
         }
       }
     }
@@ -216,8 +223,13 @@ export default class AdsetService implements OnModuleInit {
     let probability: number = 100;
     const monet_prob = module.Monetization?.probability;
     if (monet_prob) {
+      console.log('monet_prob'.yellow, monet_prob);
       probability = probability - monet_prob;
+    } else {
+      probability = Math.random() * probability;
+      console.log('Push - Math.random()', probability);
     }
+    console.log('recalc_and_create_push'.yellow, module.id, probability);
     return await this.modelPush.create({
       r_module_id: module.id,
       probability,
@@ -228,19 +240,42 @@ export default class AdsetService implements OnModuleInit {
     let probability: number = 100;
     const push_prob = module.Push?.probability;
     if (push_prob) {
+      console.log('push_prob'.yellow, push_prob);
       probability = probability - push_prob;
+    } else {
+      probability = Math.random() * probability;
+      console.log('Monet - Math.random()'.blue, probability);
     }
+    console.log('recalc_and_create_monetization', module.id, probability);
     return await this.modelMonetization.create({
       r_module_id: module.id,
       probability,
     });
   }
 
-  async createOptionMonetization(
-    name: string,
-    probability: number,
-    r_monetization_id: number,
-  ) {
+  async createOptionMonetization(name: string, r_monetization_id: number) {
+    // checking monetization
+    await this.modelMonetization.findOne({
+      where: {
+        id: r_monetization_id,
+      },
+      rejectOnEmpty: new Error(
+        `ID монетизации = ${r_monetization_id} не валиден. Монетизация с таким id не найдена `,
+      ),
+    });
+    // initialize probability
+    let probability: number;
+    const options = await this.modelMonetizationOption.findAll();
+    // if prev values exists
+    if (options.length > 0) {
+      const probs = options.map((item) => item.probability);
+      const prob = probs.reduce((prev, curr) => prev + curr, 0);
+      probability = 100 - prob;
+    }
+    // if NO VALUES EXISTS taking random probability
+    else {
+      probability = Math.random() * 100;
+    }
     return await this.modelMonetizationOption.create({
       name,
       probability,
@@ -248,7 +283,30 @@ export default class AdsetService implements OnModuleInit {
     });
   }
 
-  async createOptionPush(name: string, probability: number, r_push_id: number) {
+  async createOptionPush(name: string, r_push_id: number) {
+    // checking monetization
+    await this.modelPush.findOne({
+      where: {
+        id: r_push_id,
+      },
+      rejectOnEmpty: new Error(
+        `ID пуша = ${r_push_id} не валиден. Пуш с таким id не найдена `,
+      ),
+    });
+    // initialize probability
+    let probability: number;
+    const options = await this.modelPushOption.findAll();
+    // if prev values exists
+    if (options.length > 0) {
+      const probs = options.map((item) => item.probability);
+      const prob = probs.reduce((prev, curr) => prev + curr, 0);
+      probability = 100 - prob;
+    }
+    // if NO VALUES EXISTS taking random probability
+    else {
+      probability = Math.random() * 100;
+    }
+
     return await this.modelPushOption.create({
       name,
       probability,
