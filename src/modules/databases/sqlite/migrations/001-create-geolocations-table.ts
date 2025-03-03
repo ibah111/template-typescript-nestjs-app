@@ -16,6 +16,7 @@ export const up: MigrationFn<QueryInterface> = ({ context }) =>
             autoIncrement: true,
           },
           region_name: {
+            unique: true,
             type: DataTypes.STRING,
             allowNull: false,
           },
