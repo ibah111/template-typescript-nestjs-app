@@ -6,6 +6,7 @@ import { SqliteDatabaseSeed } from './seed';
 @Module({
   imports: [
     SequelizeModule.forRoot({
+      logging: false,
       name: 'sqlite',
       dialect: 'sqlite',
       storage: 'database.sqlite',
