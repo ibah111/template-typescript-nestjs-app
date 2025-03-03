@@ -1,23 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { AdsetInput, RegionNameInput } from './adset.input';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { AddModuleInput, AdsetInput, RegionNameInput } from './adset.input';
 import { AdSet, Tree } from './adset.dto/adset.interface';
 import * as tree from '../../tree.json';
 import { InjectModel } from '@nestjs/sequelize';
 import Geolocation from 'src/modules/databases/sqlite/models/geolocation.model';
-import Module from 'src/modules/databases/sqlite/models/module.model';
+import ModuleModel from 'src/modules/databases/sqlite/models/module.model';
 import Monetization from 'src/modules/databases/sqlite/models/monetization.model';
 import MonetizationOption from 'src/modules/databases/sqlite/models/monetization.option.model';
 import Push from 'src/modules/databases/sqlite/models/push.model';
 import PushOption from 'src/modules/databases/sqlite/models/push.option.model';
+import CalculateService from 'src/modules/calculate/calculate.service';
 
 @Injectable()
 export default class AdsetService {
   constructor(
     @InjectModel(Geolocation, 'sqlite')
     private readonly modelGeo: typeof Geolocation,
-  ) {}
+    @InjectModel(ModuleModel, 'sqlite')
+    private readonly modelModule: typeof ModuleModel,
+    @InjectModel(Push, 'sqlite')
+    private readonly modelPush: typeof Push,
+    @InjectModel(PushOption, 'sqlite')
+    private readonly modelPushOption: typeof PushOption,
+    @InjectModel(Monetization, 'sqlite')
+    private readonly modelMonetezation: typeof Monetization,
+    @InjectModel(MonetizationOption, 'sqlite')
+    private readonly modelMonetezationOption: typeof MonetizationOption,
 
-  private readonly tree: Tree = tree;
+    private readonly calculateService: CalculateService,
+  ) {}
 
   private selectNode(options: { name: string; probability: number }[]): string {
     const total = options.reduce((sum, opt) => sum + opt.probability, 0);
@@ -32,16 +43,14 @@ export default class AdsetService {
     return options[0].name; // fallback
   }
 
-  async config({ geo }: AdsetInput) {
-    
-  }
+  async config({ geo }: AdsetInput) {}
 
   async fulltree() {
     const all_geo = await this.modelGeo.findAll({
       attributes: ['id', 'region_name', 'probability'],
       include: [
         {
-          model: Module,
+          model: ModuleModel,
           include: [
             {
               model: Monetization,
@@ -111,5 +120,37 @@ export default class AdsetService {
       // net make recalculate
       console.log(`Геолокация ${region_name} удалена`.red);
     });
+  }
+
+  async add_module({ region, type }: AddModuleInput) {
+    const region_name = region.toLocaleUpperCase();
+    const geo = await this.modelGeo.findOne({
+      rejectOnEmpty: new NotFoundException(
+        `Геолокация ${region_name} - не найдена или удалена`,
+      ),
+      where: {
+        region_name,
+      },
+      include: [
+        {
+          model: ModuleModel,
+        },
+      ],
+    });
+    const r_geo_id = geo.id;
+    await this.modelModule
+      .create({
+        r_geo_id,
+      })
+      .then(async (res) => {
+        switch (type) {
+          case 1:
+            //await this.modelPush.create({});
+            break;
+          case 2:
+            //await this.modelMonetezation.create();
+            break;
+        }
+      });
   }
 }
