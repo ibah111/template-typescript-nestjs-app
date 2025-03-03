@@ -31,3 +31,20 @@ export class AddModuleInput extends RegionNameInput {
   @MinLength(1)
   type: number;
 }
+
+export class AddOptionInput {
+  @ApiProperty({
+    description: 'Описание опции',
+    default: `Push`,
+  })
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description:
+      'relation id. Делает выборку по таблицу по исходя из Query-параметра в строке url запроса',
+    default: 1,
+  })
+  @IsNumber()
+  r_id: number;
+}
