@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { AddModuleInput, AdsetInput, RegionNameInput } from './adset.input';
 import { AdSet, Tree } from './adset.dto/adset.interface';
 import * as tree from '../../tree.json';
@@ -10,9 +15,10 @@ import MonetizationOption from 'src/modules/databases/sqlite/models/monetization
 import Push from 'src/modules/databases/sqlite/models/push.model';
 import PushOption from 'src/modules/databases/sqlite/models/push.option.model';
 import CalculateService from 'src/modules/calculate/calculate.service';
+import Module from 'module';
 
 @Injectable()
-export default class AdsetService {
+export default class AdsetService implements OnModuleInit {
   constructor(
     @InjectModel(Geolocation, 'sqlite')
     private readonly modelGeo: typeof Geolocation,
@@ -25,10 +31,15 @@ export default class AdsetService {
     @InjectModel(Monetization, 'sqlite')
     private readonly modelMonetization: typeof Monetization,
     @InjectModel(MonetizationOption, 'sqlite')
-    private readonly modelMonetezationOption: typeof MonetizationOption,
+    private readonly modelMonetizationOption: typeof MonetizationOption,
 
     private readonly calculateService: CalculateService,
   ) {}
+  async onModuleInit() {
+    console.log(
+      'Module initialized. I will using this to run creating test tree data',
+    );
+  }
 
   private selectNode(options: { name: string; probability: number }[]): string {
     const total = options.reduce((sum, opt) => sum + opt.probability, 0);
@@ -64,11 +75,11 @@ export default class AdsetService {
               ],
             },
             {
-              attributes: ['probability'],
+              attributes: ['id', 'probability'],
               model: Push,
               include: [
                 {
-                  attributes: [],
+                  attributes: ['id', 'name', 'probability'],
                   model: PushOption,
                 },
               ],
@@ -160,34 +171,88 @@ export default class AdsetService {
       ],
     });
     const r_geo_id = geo.id;
-    return await this.modelModule
-      .create({
+    const module = await this.modelModule.findOne({
+      where: {
         r_geo_id,
-      })
-      .then(async (module) => {
-        //type coming from query url so it's typeof string value, this is why i am using == for compare
-        if (type == 1) {
-          const pushs = await this.modelPush.findAll();
-          const push_probability =
-            this.calculateService.recalculate_even_probability(pushs.length);
-          const push = await this.modelPush.create({
-            r_module_id: module.id,
-            probability: push_probability,
-          });
-          console.log(push);
-          return push;
+      },
+      include: [Push, Monetization],
+    });
+    if (!module) {
+      return await this.modelModule
+        .create({
+          r_geo_id,
+        })
+        .then(async (result_module) => {
+          //type coming from query url so it's typeof string value, this is why i am using == for compare
+          if (type == 1) {
+            return await this.recalc_and_create_push(result_module.id);
+          }
+          if (type == 2) {
+            return await this.recalc_and_create_monetization(result_module.id);
+          }
+        });
+    } else {
+      console.log('Модуль уже создан. Проверяем тип.'.green);
+
+      if (type == 1) {
+        console.log('push'.yellow, module);
+        if (module.dataValues.Push) {
+          throw new Error('У данного модуля уже есть пуш.');
+        } else {
+          return await this.recalc_and_create_push(module);
         }
-        if (type == 2) {
-          const monets = await this.modelMonetization.findAll();
-          const monets_probability =
-            this.calculateService.recalculate_even_probability(monets.length);
-          const monet = await this.modelMonetization.create({
-            r_module_id: module.id,
-            probability: monets_probability,
-          });
-          console.log(monet);
-          return monet;
+      }
+      if (type == 2) {
+        if (module.dataValues.Monetization) {
+          throw new Error('У данного модуля уже есть монетизация.');
+        } else {
+          return await this.recalc_and_create_monetization(module.id);
         }
-      });
+      }
+    }
+  }
+
+  async recalc_and_create_push(module: ModuleModel) {
+    let probability: number = 100;
+    const monet_prob = module.Monetization?.probability;
+    if (monet_prob) {
+      probability = probability - monet_prob;
+    }
+    return await this.modelPush.create({
+      r_module_id: module.id,
+      probability,
+    });
+  }
+
+  async recalc_and_create_monetization(module: ModuleModel) {
+    let probability: number = 100;
+    const push_prob = module.Push?.probability;
+    if (push_prob) {
+      probability = probability - push_prob;
+    }
+    return await this.modelMonetization.create({
+      r_module_id: module.id,
+      probability,
+    });
+  }
+
+  async createOptionMonetization(
+    name: string,
+    probability: number,
+    r_monetization_id: number,
+  ) {
+    return await this.modelMonetizationOption.create({
+      name,
+      probability,
+      r_monetization_id,
+    });
+  }
+
+  async createOptionPush(name: string, probability: number, r_push_id: number) {
+    return await this.modelPushOption.create({
+      name,
+      probability,
+      r_push_id,
+    });
   }
 }
