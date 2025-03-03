@@ -32,5 +32,5 @@ export default class Push extends Model<
   probability: number;
 
   @HasMany(() => PushOption)
-  option?: PushOption[];
+  options?: PushOption[];
 }
