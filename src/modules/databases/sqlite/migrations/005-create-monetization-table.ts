@@ -33,6 +33,10 @@ export const up: MigrationFn<QueryInterface> = ({ context }) =>
             type: DataTypes.DATE,
             defaultValue: new Date(),
           },
+          deletedAt: {
+            allowNull: true,
+            type: DataTypes.DATE,
+          },
         },
         { transaction: t },
       ),
