@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   Table,
   Unique,
@@ -27,6 +28,6 @@ export default class Geolocation extends Model<
   @Column(DataType.FLOAT)
   probability: number;
 
-  @HasMany(() => Module)
-  Modules?: Module[];
+  @HasOne(() => Module)
+  Modules?: Module;
 }
