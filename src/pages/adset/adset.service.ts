@@ -50,20 +50,25 @@ export default class AdsetService {
       attributes: ['id', 'region_name', 'probability'],
       include: [
         {
+          attributes: ['id'],
           model: ModuleModel,
           include: [
             {
+              attributes: ['id', 'probability'],
               model: Monetization,
               include: [
                 {
+                  attributes: ['id', 'name', 'probability'],
                   model: MonetizationOption,
                 },
               ],
             },
             {
+              attributes: ['probability'],
               model: Push,
               include: [
                 {
+                  attributes: [],
                   model: PushOption,
                 },
               ],
@@ -155,30 +160,33 @@ export default class AdsetService {
       ],
     });
     const r_geo_id = geo.id;
-    await this.modelModule
+    return await this.modelModule
       .create({
         r_geo_id,
       })
       .then(async (module) => {
-        switch (type) {
-          case 1:
-            const pushs = await this.modelPush.findAll();
-            const push_probability =
-              this.calculateService.recalculate_even_probability(pushs.length);
-            await this.modelPush.create({
-              r_module_id: module.id,
-              probability: push_probability,
-            });
-            break;
-          case 2:
-            const monets = await this.modelMonetization.findAll();
-            const monets_probability =
-              this.calculateService.recalculate_even_probability(monets.length);
-            await this.modelMonetization.create({
-              r_module_id: module.id,
-              probability: monets_probability,
-            });
-            break;
+        //type coming from query url so it's typeof string value, this is why i am using == for compare
+        if (type == 1) {
+          const pushs = await this.modelPush.findAll();
+          const push_probability =
+            this.calculateService.recalculate_even_probability(pushs.length);
+          const push = await this.modelPush.create({
+            r_module_id: module.id,
+            probability: push_probability,
+          });
+          console.log(push);
+          return push;
+        }
+        if (type == 2) {
+          const monets = await this.modelMonetization.findAll();
+          const monets_probability =
+            this.calculateService.recalculate_even_probability(monets.length);
+          const monet = await this.modelMonetization.create({
+            r_module_id: module.id,
+            probability: monets_probability,
+          });
+          console.log(monet);
+          return monet;
         }
       });
   }
