@@ -10,12 +10,16 @@ import {
 } from 'sequelize-typescript';
 import Module from './module.model';
 import PushOption from './push.option.model';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   paranoid: true,
   tableName: 'Pushs',
 })
-export default class Push extends Model {
+export default class Push extends Model<
+  InferAttributes<Push>,
+  InferCreationAttributes<Push>
+> {
   @ForeignKey(() => Module)
   @AllowNull(false)
   @Column(DataType.INTEGER)
