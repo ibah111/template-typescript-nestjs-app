@@ -85,7 +85,7 @@ export default class AdsetService {
     );
     const total_count = all_geolocations.length;
     if (total_count > 0) {
-      probability = probability / total_count;
+      probability = probability / (total_count + 1);
       console.log(region_name, probability);
       for (const geo of all_geolocations) {
         await geo

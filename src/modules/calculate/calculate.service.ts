@@ -7,7 +7,7 @@ export default class CalculateService {
   public recalculate_even_probability(total_count: number): number {
     let even_probability: number = 100;
     if (total_count > 0) {
-      even_probability = even_probability / total_count;
+      even_probability = even_probability / (total_count + 1);
       return even_probability;
     }
     return even_probability;
