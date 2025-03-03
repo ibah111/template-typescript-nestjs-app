@@ -4,6 +4,10 @@ import { RedisModule } from './redis/redis.module';
 import CalculateModule from './calculate/calculate.module';
 
 @Module({
-  imports: [DatabaseModule, RedisModule, CalculateModule],
+  imports: [
+    DatabaseModule,
+    //RedisModule,
+    CalculateModule,
+  ],
 })
 export default class ModulesModule {}
