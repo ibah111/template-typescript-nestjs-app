@@ -8,19 +8,21 @@ import Push from 'src/modules/databases/sqlite/models/push.model';
 import PushOption from 'src/modules/databases/sqlite/models/push.option.model';
 import ModuleModel from 'src/modules/databases/sqlite/models/module.model';
 import Geolocation from 'src/modules/databases/sqlite/models/geolocation.model';
+import CalculateModule from 'src/modules/calculate/calculate.module';
 @Module({
   imports: [
     SequelizeModule.forFeature(
       [
+        Geolocation,
         ModuleModel,
         Monetization,
         MonetizationOption,
         Push,
         PushOption,
-        Geolocation,
       ],
       'sqlite',
     ),
+    CalculateModule,
   ],
   controllers: [AdsetController],
   providers: [AdsetService],
