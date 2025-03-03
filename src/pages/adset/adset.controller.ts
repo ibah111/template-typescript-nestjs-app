@@ -1,7 +1,12 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import AdsetService from './adset.service';
-import { AddModuleInput, AdsetInput, RegionNameInput } from './adset.input';
+import {
+  AddModuleInput,
+  AddOptionInput,
+  AdsetInput,
+  RegionNameInput,
+} from './adset.input';
 
 @ApiTags('adset')
 @Controller('adset')
@@ -55,5 +60,25 @@ export default class AdsetController {
       region,
       type,
     });
+  }
+
+  @ApiOperation({
+    description:
+      'type = 1 добавляет опцию пуш. type = 2 добавляет опцию монетизации',
+    summary: 'Добавляет опцию по указанному типу.',
+  })
+  @Post('add_option')
+  async add_option(
+    @Query('type')
+    type: number,
+    @Body() { name, r_id }: AddOptionInput,
+  ) {
+    const typ = Number(type);
+    console.log(typ, typeof typ, typ === 1, typ === 2);
+    if (typ === 1) {
+      return await this.service.createOptionPush(name, r_id);
+    } else if (typ === 2) {
+      return await this.service.createOptionMonetization(name, r_id);
+    }
   }
 }
