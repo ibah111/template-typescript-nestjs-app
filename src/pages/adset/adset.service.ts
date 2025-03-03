@@ -55,6 +55,7 @@ export default class AdsetService implements OnModuleInit {
               model: Push,
               include: [
                 {
+                  attributes: ['id', 'r_push_id', 'name', 'probability'],
                   limit: 1,
                   order: [['probability', 'DESC']],
                   model: PushOption,
@@ -66,6 +67,12 @@ export default class AdsetService implements OnModuleInit {
               model: Monetization,
               include: [
                 {
+                  attributes: [
+                    'id',
+                    'r_monetization_id',
+                    'name',
+                    'probability',
+                  ],
                   limit: 1,
                   order: [['probability', 'DESC']],
                   model: MonetizationOption,
