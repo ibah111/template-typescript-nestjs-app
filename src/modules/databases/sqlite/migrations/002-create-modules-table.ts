@@ -17,7 +17,7 @@ export const up: MigrationFn<QueryInterface> = ({ context }) =>
           },
           r_geo_id: {
             allowNull: false,
-            type: DataTypes.STRING,
+            type: DataTypes.NUMBER,
             references: {
               model: 'geolocations',
               key: 'id',
