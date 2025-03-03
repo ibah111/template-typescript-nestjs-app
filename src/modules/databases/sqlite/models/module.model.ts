@@ -30,8 +30,8 @@ export default class Module extends Model<
   geolocation?: Geolocation;
 
   @HasOne(() => Push)
-  Pushs?: Push;
+  Push?: Push;
 
   @HasOne(() => Monetization)
-  Monetizations?: Monetization;
+  Monetization?: Monetization;
 }
