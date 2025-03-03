@@ -14,7 +14,7 @@ export default class AdsetController {
       'config: '.yellow,
       `geo: ${input.geo}, device: ${input.device}`,
     );
-    return await this.service.config({
+    return await this.service.generateAdSet({
       ...input,
     });
   }
