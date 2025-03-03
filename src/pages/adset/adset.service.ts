@@ -116,9 +116,26 @@ export default class AdsetService {
         `Геолокация ${region_name} - не найдена или удалена`,
       ),
     });
-    return geo.destroy().then(() => {
+    return geo.destroy().then(async () => {
       // net make recalculate
+
       console.log(`Геолокация ${region_name} удалена`.red);
+
+      const geos = await this.modelGeo.findAll();
+      const new_probability =
+        this.calculateService.recalculate_even_probability(geos.length);
+      for (const geo of geos) {
+        await geo
+          .update({
+            probability: new_probability,
+          })
+          .then(() => {
+            console.log(
+              `probability updated ${geo.region_name} = ` +
+                `${new_probability}`,
+            );
+          });
+      }
     });
   }
 
