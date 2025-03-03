@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AdsetInput, RegionNameInput } from './adset.input';
 import { AdSet, Tree } from './adset.dto/adset.interface';
 import * as tree from '../../tree.json';
@@ -116,10 +116,17 @@ export default class AdsetService {
 
   async deletegeo({ region }: RegionNameInput) {
     const region_name = region.toLocaleUpperCase();
-    return await this.modelGeo.destroy({
+    const geo = await this.modelGeo.findOne({
       where: {
         region_name,
       },
+      rejectOnEmpty: new NotFoundException(
+        `Геолокация ${region_name} - не найдена или удалена`,
+      ),
+    });
+    return geo.destroy().then(() => {
+      // net make recalculate
+      console.log(`Геолокация ${region_name} удалена`.red);
     });
   }
 }

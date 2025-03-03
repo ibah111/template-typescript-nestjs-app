@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import AdsetService from './adset.service';
 import { AdsetInput, RegionNameInput } from './adset.input';
@@ -23,5 +23,12 @@ export default class AdsetController {
   @Post('add_geo')
   async add_geo(@Body() { region }: RegionNameInput) {
     return await this.service.addgeo(region);
+  }
+
+  @Delete('delete_geo')
+  async delete_geo(@Query() { region }: RegionNameInput) {
+    return await this.service.deletegeo({
+      region,
+    });
   }
 }
