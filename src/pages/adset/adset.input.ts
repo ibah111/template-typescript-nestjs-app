@@ -6,9 +6,9 @@ export class AdsetInput {
   @IsString()
   geo: string;
 
-  @ApiProperty()
-  @IsString()
-  device: string;
+  // @ApiProperty()
+  // @IsString()
+  // device: string;
 }
 
 export class RegionNameInput {

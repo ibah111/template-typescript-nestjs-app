@@ -14,6 +14,7 @@ import MonetizationOption from 'src/modules/databases/sqlite/models/monetization
 import Push from 'src/modules/databases/sqlite/models/push.model';
 import PushOption from 'src/modules/databases/sqlite/models/push.option.model';
 import CalculateService from 'src/modules/calculate/calculate.service';
+import { round } from 'src/utils/round';
 
 @Injectable()
 export default class AdsetService implements OnModuleInit {
@@ -136,7 +137,7 @@ export default class AdsetService implements OnModuleInit {
       for (const geo of all_geolocations) {
         await geo
           .update({
-            probability,
+            probability: round(probability),
           })
           .then((res) => {
             console.log(
@@ -263,7 +264,7 @@ export default class AdsetService implements OnModuleInit {
     console.log('recalc_and_create_push'.yellow, module.id, probability);
     return await this.modelPush.create({
       r_module_id: module.id,
-      probability,
+      probability: round(probability),
     });
   }
 
@@ -280,7 +281,7 @@ export default class AdsetService implements OnModuleInit {
     console.log('recalc_and_create_monetization', module.id, probability);
     return await this.modelMonetization.create({
       r_module_id: module.id,
-      probability,
+      probability: round(probability),
     });
   }
 
@@ -301,15 +302,16 @@ export default class AdsetService implements OnModuleInit {
     if (options.length > 0) {
       const probs = options.map((item) => item.probability);
       const prob = probs.reduce((prev, curr) => prev + curr, 0);
+      console.log('createOptionMonetization => prob => ', prob);
       probability = 100 - prob;
     }
     // if NO VALUES EXISTS taking random probability
     else {
-      probability = Math.random() * 100;
+      probability = round(Math.random() * 100);
     }
     return await this.modelMonetizationOption.create({
       name,
-      probability,
+      probability: round(probability),
       r_monetization_id,
     });
   }
@@ -331,16 +333,17 @@ export default class AdsetService implements OnModuleInit {
     if (options.length > 0) {
       const probs = options.map((item) => item.probability);
       const prob = probs.reduce((prev, curr) => prev + curr, 0);
+      console.log('createOptionPush => prob => ', prob);
       probability = 100 - prob;
     }
     // if NO VALUES EXISTS taking random probability
     else {
-      probability = Math.random() * 100;
+      probability = round(Math.random() * 100);
     }
 
     return await this.modelPushOption.create({
       name,
-      probability,
+      probability: round(probability),
       r_push_id,
     });
   }
