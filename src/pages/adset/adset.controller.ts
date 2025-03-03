@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import AdsetService from './adset.service';
-import { AdsetInput, RegionNameInput } from './adset.input';
+import { AddModuleInput, AdsetInput, RegionNameInput } from './adset.input';
 
 @ApiTags('adset')
 @Controller('adset')
@@ -9,7 +9,7 @@ export default class AdsetController {
   constructor(private readonly service: AdsetService) {}
 
   @ApiOperation({
-    description: 'Возвращает самые благоприятные вероятности рекламы',
+    summary: 'Возвращает самые благоприятные вероятности рекламы',
   })
   @Get('config')
   async config(@Query() input: AdsetInput) {
@@ -19,7 +19,7 @@ export default class AdsetController {
   }
 
   @ApiOperation({
-    description: 'Полное дерево модулей и внутренних зависимостей',
+    summary: 'Полное дерево модулей и внутренних зависимостей',
   })
   @Get('full_tree')
   async full_tree() {
@@ -27,7 +27,7 @@ export default class AdsetController {
   }
 
   @ApiOperation({
-    description: 'Добавляет и делает рекалькуляцию вероятности модулей',
+    summary: 'Добавляет и делает рекалькуляцию вероятности модулей',
   })
   @Post('add_geo')
   async add_geo(@Body() { region }: RegionNameInput) {
@@ -35,12 +35,25 @@ export default class AdsetController {
   }
 
   @ApiOperation({
-    description: 'Удаляет геолокацию',
+    summary: 'Удаляет геолокацию',
   })
   @Delete('delete_geo')
   async delete_geo(@Query() { region }: RegionNameInput) {
     return await this.service.deletegeo({
       region,
+    });
+  }
+
+  @ApiOperation({
+    summary: 'Добавляет модуль, с указанным типом',
+    description:
+      'Если у региона есть уже модуль 1 или 2. При попытке создать существующий модуль выдаст ошибку',
+  })
+  @Post('add_module')
+  async add_module(@Query() { region, type }: AddModuleInput) {
+    return await this.service.add_module({
+      region,
+      type,
     });
   }
 }
