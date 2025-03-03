@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import AdsetModule from './adset/adset.module';
 
 @Module({
-  imports: [],
-  providers: [],
+  imports: [AdsetModule],
 })
 export default class PagesModule {}
