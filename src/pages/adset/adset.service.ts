@@ -23,7 +23,7 @@ export default class AdsetService {
     @InjectModel(PushOption, 'sqlite')
     private readonly modelPushOption: typeof PushOption,
     @InjectModel(Monetization, 'sqlite')
-    private readonly modelMonetezation: typeof Monetization,
+    private readonly modelMonetization: typeof Monetization,
     @InjectModel(MonetizationOption, 'sqlite')
     private readonly modelMonetezationOption: typeof MonetizationOption,
 
@@ -159,13 +159,25 @@ export default class AdsetService {
       .create({
         r_geo_id,
       })
-      .then(async (res) => {
+      .then(async (module) => {
         switch (type) {
           case 1:
-            //await this.modelPush.create({});
+            const pushs = await this.modelPush.findAll();
+            const push_probability =
+              this.calculateService.recalculate_even_probability(pushs.length);
+            await this.modelPush.create({
+              r_module_id: module.id,
+              probability: push_probability,
+            });
             break;
           case 2:
-            //await this.modelMonetezation.create();
+            const monets = await this.modelMonetization.findAll();
+            const monets_probability =
+              this.calculateService.recalculate_even_probability(monets.length);
+            await this.modelMonetization.create({
+              r_module_id: module.id,
+              probability: monets_probability,
+            });
             break;
         }
       });
