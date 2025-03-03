@@ -32,25 +32,8 @@ export default class AdsetService {
     return options[0].name; // fallback
   }
 
-  generateAdSet({ geo }: AdsetInput): AdSet {
-    const adSet: AdSet = {
-      adset_id: Math.floor(Math.random() * 90000) + 10000,
-      modules: [{ type: 'geo', name: geo }],
-    };
-
-    const geoNode = this.tree.root.geo[geo];
-    if (!geoNode) {
-      throw new Error('Geo not found');
-    }
-
-    for (const [moduleType, moduleData] of Object.entries(geoNode.modules)) {
-      if (Math.random() * 100 < moduleData.probability) {
-        const selectedOption = this.selectNode(moduleData.options);
-        adSet.modules.push({ type: moduleType, name: selectedOption });
-      }
-    }
-
-    return adSet;
+  async config({ geo }: AdsetInput) {
+    
   }
 
   async fulltree() {
