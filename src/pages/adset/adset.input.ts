@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength } from 'class-validator';
+import { IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class AdsetInput {
   @ApiProperty()
@@ -12,8 +12,21 @@ export class AdsetInput {
 }
 
 export class RegionNameInput {
-  @ApiProperty({})
+  @ApiProperty({
+    description: 'Имя региона. Проходит через UpperCase.',
+  })
   @IsString()
   @MaxLength(4)
   region: string;
+}
+
+export class AddModuleInput extends RegionNameInput {
+  @ApiProperty({
+    description:
+      'Тип модуля: Пуш (push = 1) или Монетизация (monetization = 2)',
+  })
+  @IsNumber()
+  @MaxLength(2)
+  @MinLength(1)
+  type: number;
 }
