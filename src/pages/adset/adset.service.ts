@@ -288,18 +288,23 @@ export default class AdsetService implements OnModuleInit {
       ),
     });
     // initialize probability
-    let probability: number;
+    let probability: number = 100;
     const options = await this.modelMonetizationOption.findAll();
     // if prev values exists
     if (options.length > 0) {
-      const probs = options.map((item) => item.probability);
-      const prob = probs.reduce((prev, curr) => prev + curr, 0);
-      console.log('createOptionMonetization => prob => ', prob);
-      probability = 100 - prob;
+      for (let i = 0; i < options.length; i++) {
+        const isLast = i === options.length - 1;
+        const value = isLast ? probability : Math.random() * probability;
+        probability -= value;
+        const rv = round(value);
+        options[i].update({
+          probability: rv,
+        });
+      }
     }
     // if NO VALUES EXISTS taking random probability
     else {
-      probability = round(Math.random() * 100);
+      probability = 100;
     }
     return await this.modelMonetizationOption.create({
       name,
@@ -319,18 +324,25 @@ export default class AdsetService implements OnModuleInit {
       ),
     });
     // initialize probability
-    let probability: number;
+    let probability: number = 100;
     const options = await this.modelPushOption.findAll();
     // if prev values exists
     if (options.length > 0) {
-      const probs = options.map((item) => item.probability);
-      const prob = probs.reduce((prev, curr) => prev + curr, 0);
-      console.log('createOptionPush => prob => ', prob);
-      probability = 100 - prob;
+      for (let i = 0; i < options.length; i++) {
+        const isLast = i === options.length - 1;
+        const value = isLast ? probability : Math.random() * probability;
+        probability -= value;
+        //options[i].probability = value;
+        //options[i].save();
+        const rv = round(value);
+        options[i].update({
+          probability: rv,
+        });
+      }
     }
     // if NO VALUES EXISTS taking random probability
     else {
-      probability = round(Math.random() * 100);
+      probability = 100;
     }
 
     return await this.modelPushOption.create({
