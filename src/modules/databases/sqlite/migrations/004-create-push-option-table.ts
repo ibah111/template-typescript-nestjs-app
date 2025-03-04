@@ -20,7 +20,7 @@ export const up: MigrationFn<QueryInterface> = ({ context }) =>
             allowNull: false,
           },
           probability: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: false,
           },
           r_push_id: {
