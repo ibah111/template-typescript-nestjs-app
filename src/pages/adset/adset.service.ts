@@ -121,30 +121,22 @@ export default class AdsetService implements OnModuleInit {
     });
     return all_geo;
   }
-
-  async addgeo(region: string) {
+  /**
+   * Добавляет строку геолокации в общий пулл.
+   * Перерасчитывает вероятности поровну соразмерно количеству строк в таблице 50/50 33/33/33 25/25/25/25
+   */
+  async add_geo(region: string) {
     let probability: number = 100;
     const region_name = region.toLocaleUpperCase();
     const all_geolocations = await this.modelGeo.findAll();
-    console.log(
-      'ALL'.yellow,
-      all_geolocations.map((res) => res.dataValues),
-    );
     const total_count = all_geolocations.length;
     if (total_count > 0) {
       probability = probability / (total_count + 1);
       console.log(region_name, probability);
       for (const geo of all_geolocations) {
-        await geo
-          .update({
-            probability: round(probability),
-          })
-          .then((res) => {
-            console.log(
-              'Probability of Region ' + `${res.region_name}`.yellow,
-              ' been updated to ' + `${probability}`.yellow,
-            );
-          });
+        await geo.update({
+          probability: round(probability),
+        });
       }
     }
     return await this.modelGeo.create({
