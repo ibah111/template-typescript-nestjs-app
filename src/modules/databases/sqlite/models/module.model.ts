@@ -24,7 +24,7 @@ export default class Module extends Model<
 > {
   @ForeignKey(() => Geolocation)
   @Column(DataType.INTEGER)
-  r_geo_id: number;
+  declare r_geo_id: number;
 
   @BelongsTo(() => Geolocation)
   geolocation?: Geolocation;

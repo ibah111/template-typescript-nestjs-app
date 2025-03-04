@@ -23,13 +23,13 @@ export default class Push extends Model<
   @ForeignKey(() => Module)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  r_module_id: number;
+  declare r_module_id: number;
 
   @BelongsTo(() => Module)
   module?: Module;
 
   @Column(DataType.FLOAT)
-  probability: number;
+  declare probability: number;
 
   @HasMany(() => PushOption)
   options?: PushOption[];

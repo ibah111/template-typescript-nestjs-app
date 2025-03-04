@@ -20,16 +20,16 @@ export default class MonetizationOption extends Model<
 > {
   @AllowNull(false)
   @Column(DataType.STRING)
-  name: string;
+  declare name: string;
 
   @AllowNull(false)
   @Column(DataType.FLOAT)
-  probability: number;
+  declare probability: number;
 
   @ForeignKey(() => Monetization)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  r_monetization_id: number;
+  declare r_monetization_id: number;
 
   @BelongsTo(() => Monetization)
   monetization?: Monetization;

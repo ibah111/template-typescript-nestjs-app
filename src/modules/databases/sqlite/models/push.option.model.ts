@@ -20,15 +20,15 @@ export default class PushOption extends Model<
 > {
   @AllowNull(false)
   @Column(DataType.STRING)
-  name: string;
+  declare name: string;
 
   @Column(DataType.FLOAT)
-  probability: number;
+  declare probability: number;
 
   @ForeignKey(() => Push)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  r_push_id: number;
+  declare r_push_id: number;
 
   @BelongsTo(() => Push)
   push?: Push;
