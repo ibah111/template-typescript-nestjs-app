@@ -198,46 +198,65 @@ export default class AdsetService implements OnModuleInit {
       where: {
         r_geo_id,
       },
-      include: [Push, Monetization],
+      include: [{ model: Push }, { model: Monetization }],
     });
     if (!module) {
-      console.log('МОДУЛЯ НЕ СУЩЕСТВУЕТ!'.red);
+      console.log('МОДУЛЯ НЕ СУЩЕСТВУЕТ!'.red, 'Cоздаю новый модуль');
       return await this.modelModule
         .create({
           r_geo_id,
         })
         .then(async (result_module) => {
-          //type coming from query url so it's typeof string value, this is why i am using == for compare
-          if (type == 1) {
-            return await this.recalc_and_create_push(result_module).then(
-              (res) =>
-                console.log(`Модуль создан, и пуш к нему, ${res.id}`.green),
-            );
-          }
-          if (type == 2) {
-            return await this.recalc_and_create_monetization(
-              result_module,
-            ).then((res) =>
-              console.log(`Модуль создан, и монетизация к нему ${res.id}`),
-            );
-          }
+          await this.recalc_and_create(result_module, Number(type));
         });
     } else {
       console.log('Модуль уже создан. Проверяем тип.'.green);
+      await this.recalc_and_create(module, Number(type));
+    }
+  }
 
-      if (type == 1) {
-        console.log('push'.yellow, module);
-        if (module.dataValues.Push) {
-          throw new Error('У данного модуля уже есть пуш.');
-        } else {
-          return await this.recalc_and_create_push(module);
+  async recalc_and_create(module: ModuleModel, type: number) {
+    let probability: number = 100;
+    switch (type) {
+      //Создаю пуш для родительского модуля
+      case 1: {
+        console.log('module', module);
+        if (module.dataValues.Push) throw Error('Пуш у модуля уже существует');
+        const monet_prob = module.dataValues.Monetization?.probability;
+        console.log(monet_prob || 'Монетизация не найдена'.yellow);
+        if (monet_prob) {
+          //радномное число
+          probability = round(Math.random() * 100);
+          module.dataValues.Monetization!.update({
+            probability: probability,
+          });
+          return await this.modelPush.create({
+            probability: round(100 - probability),
+            r_module_id: module.id,
+          });
         }
+        console.log('creating push with 100 probability');
+        await this.modelPush.create({
+          r_module_id: module.id,
+          probability,
+        });
       }
-      if (type == 2) {
-        if (module.dataValues.Monetization) {
-          throw new Error('У данного модуля уже есть монетизация.');
-        } else {
-          return await this.recalc_and_create_monetization(module);
+      // Создаю монетизацию для родительского модуля
+      case 2: {
+        if (module.dataValues.Monetization)
+          throw Error('Монетизация у этого модуля уже есть');
+        const push_prob = module.dataValues.Push?.probability;
+        console.log(push_prob);
+        if (push_prob) {
+          //рандомное число
+          probability = round(Math.random() * 100);
+          module.dataValues.Push!.update({
+            probability: probability,
+          });
+          return await this.modelMonetization.create({
+            probability: round(100 - probability),
+            r_module_id: module.id,
+          });
         }
       }
     }
