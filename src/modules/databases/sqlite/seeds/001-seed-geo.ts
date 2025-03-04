@@ -6,8 +6,9 @@ export const up: MigrationFn<QueryInterface> = ({ context }) =>
     Promise.all([
       context.sequelize.models.Geolocation.bulkCreate(
         [
-          { region_name: 'RU', probability: 50 },
-          { region_name: 'US', probability: 50 },
+          { region_name: 'RU', probability: 33 },
+          { region_name: 'US', probability: 33 },
+          { region_name: 'KZ', probability: 33 },
         ],
         { transaction: t },
       ),
