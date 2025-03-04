@@ -32,15 +32,20 @@ export default class AdsetController {
   }
 
   @ApiOperation({
-    summary: 'Добавляет и делает рекалькуляцию вероятности модулей',
+    summary:
+      'Добавляет и делает рекалькуляцию вероятности модулей <= 1 шаг (добавить геолокацию)',
+    description:
+      'Добавляет строку геолокации в общий пулл. Перерасчитывает вероятности поровну соразмерно количеству строк в таблице 50/50 33/33/33 25/25/25/25',
   })
   @Post('add_geo')
   async add_geo(@Body() { region }: RegionNameInput) {
-    return await this.service.addgeo(region);
+    return await this.service.add_geo(region);
   }
 
   @ApiOperation({
-    summary: 'Удаляет геолокацию',
+    summary: 'Удаляет геолокацию, а также все дочерние опции и модули',
+    description:
+      'Удаляет геолокацию, а также все дочерние опции и модули. Перерасчитывает поровну probability исходя их кол-ва строк в таблице',
   })
   @Delete('delete_geo')
   async delete_geo(@Query() { region }: RegionNameInput) {
