@@ -1,0 +1,41 @@
+{
+  "root": {
+    "geo": {
+      "RU": {
+        "probability": 50,
+        "modules": {
+          "push": {
+            "probability": 70,
+            "options": [
+              { "name": "Push A", "probability": 60 },
+              { "name": "Push B", "probability": 40 }
+            ]
+          },
+          "monetization": {
+            "probability": 30,
+            "options": [
+              { "name": "Popunder", "probability": 50 },
+              { "name": "Offerwall", "probability": 50 }
+            ]
+          }
+        }
+      },
+      "US": {
+        "probability": 50,
+        "modules": {
+          "push": {
+            "probability": 60,
+            "options": [
+              { "name": "Push X", "probability": 80 },
+              { "name": "Push Y", "probability": 20 }
+            ]
+          },
+          "monetization": {
+            "probability": 40,
+            "options": [{ "name": "Subscription", "probability": 100 }]
+          }
+        }
+      }
+    }
+  }
+}
