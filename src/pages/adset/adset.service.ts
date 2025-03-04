@@ -289,6 +289,8 @@ export default class AdsetService implements OnModuleInit {
     });
     // initialize probability
     let probability: number = 100;
+    const remainingTotal = round(Math.random() * 100);
+    probability -= remainingTotal;
     const options = await this.modelMonetizationOption.findAll();
     // if prev values exists
     if (options.length > 0) {
@@ -297,20 +299,27 @@ export default class AdsetService implements OnModuleInit {
         const value = isLast ? probability : Math.random() * probability;
         probability -= value;
         const rv = round(value);
+        console.log(options[i].id, rv);
         options[i].update({
           probability: rv,
         });
       }
+      console.log('for new', remainingTotal);
+      return await this.modelMonetizationOption.create({
+        name,
+        probability: round(remainingTotal),
+        r_monetization_id,
+      });
     }
-    // if NO VALUES EXISTS taking random probability
+    // if NO VALUES EXISTS taking 100 probability
     else {
       probability = 100;
+      return await this.modelMonetizationOption.create({
+        name,
+        probability: round(probability),
+        r_monetization_id,
+      });
     }
-    return await this.modelMonetizationOption.create({
-      name,
-      probability: round(probability),
-      r_monetization_id,
-    });
   }
 
   async createOptionPush(name: string, r_push_id: number) {
@@ -325,6 +334,8 @@ export default class AdsetService implements OnModuleInit {
     });
     // initialize probability
     let probability: number = 100;
+    const remainingTotal = round(Math.random() * 100);
+    probability -= remainingTotal;
     const options = await this.modelPushOption.findAll();
     // if prev values exists
     if (options.length > 0) {
@@ -339,16 +350,21 @@ export default class AdsetService implements OnModuleInit {
           probability: rv,
         });
       }
+      console.log(remainingTotal);
+      return await this.modelPushOption.create({
+        name,
+        probability: round(remainingTotal),
+        r_push_id,
+      });
     }
-    // if NO VALUES EXISTS taking random probability
+    // if NO VALUES EXISTS taking 100 probability
     else {
       probability = 100;
+      return await this.modelPushOption.create({
+        name,
+        probability: round(probability),
+        r_push_id,
+      });
     }
-
-    return await this.modelPushOption.create({
-      name,
-      probability: round(probability),
-      r_push_id,
-    });
   }
 }
